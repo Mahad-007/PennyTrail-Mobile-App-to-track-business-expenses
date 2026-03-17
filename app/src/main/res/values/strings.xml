@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PennyTrail</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="sales">Sales</string>
+    <string name="expenses">Expenses</string>
+    <string name="credits">Credits</string>
+    <string name="products">Products</string>
+    <string name="add">Add</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm_delete">Are you sure you want to delete this?</string>
+    <string name="no_items">No items yet</string>
+</resources>
