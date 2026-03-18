@@ -21,6 +21,7 @@ data class CreditFormState(
     val amountPaid: Double = 0.0,
     val isPaid: Boolean = false,
     val paidDate: Long? = null,
+    val linkedSaleId: Long? = null,
     val isEditing: Boolean = false
 )
 
@@ -58,6 +59,7 @@ class CreditViewModel(private val repository: CreditRepository) : ViewModel() {
                     amountPaid = credit.amountPaid,
                     isPaid = credit.isPaid,
                     paidDate = credit.paidDate,
+                    linkedSaleId = credit.linkedSaleId,
                     isEditing = true
                 )
             }
@@ -88,7 +90,8 @@ class CreditViewModel(private val repository: CreditRepository) : ViewModel() {
                         date = state.date,
                         amountPaid = state.amountPaid,
                         isPaid = state.isPaid,
-                        paidDate = state.paidDate
+                        paidDate = state.paidDate,
+                        linkedSaleId = state.linkedSaleId
                     )
                 )
             } else {

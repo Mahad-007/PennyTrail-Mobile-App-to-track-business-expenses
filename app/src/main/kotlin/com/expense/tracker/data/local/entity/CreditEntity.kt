@@ -13,5 +13,6 @@ data class CreditEntity(
     val amountPaid: Double = 0.0,
     val isPaid: Boolean = false,
     val paidDate: Long? = null,
+    val linkedSaleId: Long? = null,
     val createdAt: Long = System.currentTimeMillis()
 )

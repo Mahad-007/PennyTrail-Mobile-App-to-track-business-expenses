@@ -3,6 +3,7 @@ package com.expense.tracker.ui.screens.sale
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.expense.tracker.PennyTrailApp
+import com.expense.tracker.data.local.entity.PaymentType
 import com.expense.tracker.data.local.entity.SaleEntity
 import com.expense.tracker.data.local.entity.SalesByProduct
 import com.expense.tracker.ui.components.EmptyStateMessage
@@ -256,6 +258,31 @@ private fun IndividualSaleRow(sale: SaleEntity, showProductName: Boolean, onClic
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                if (sale.paymentType == PaymentType.CREDIT.name) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = "CREDIT",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.pennyTrailColors.creditAmber,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.pennyTrailColors.cardAmber,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                        if (sale.customerName.isNotBlank()) {
+                            Text(
+                                text = sale.customerName,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.pennyTrailColors.creditAmber
+                            )
+                        }
+                    }
+                }
             }
             Text(
                 text = CurrencyUtils.formatAmount(sale.totalAmount),

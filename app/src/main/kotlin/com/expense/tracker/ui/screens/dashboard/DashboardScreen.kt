@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.expense.tracker.PennyTrailApp
+import com.expense.tracker.data.local.entity.PaymentType
 import com.expense.tracker.ui.components.SummaryCard
 import com.expense.tracker.ui.navigation.Screen
 import com.expense.tracker.ui.theme.pennyTrailColors
@@ -184,7 +185,18 @@ fun DashboardScreen(navController: NavController) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
-                                    Text(sale.productName, style = MaterialTheme.typography.bodyMedium)
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text(sale.productName, style = MaterialTheme.typography.bodyMedium)
+                                        if (sale.paymentType == PaymentType.CREDIT.name) {
+                                            Text(
+                                                text = "CREDIT",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.pennyTrailColors.creditAmber
+                                            )
+                                        }
+                                    }
                                     Text(
                                         DateUtils.formatShortDate(sale.date),
                                         style = MaterialTheme.typography.bodySmall,

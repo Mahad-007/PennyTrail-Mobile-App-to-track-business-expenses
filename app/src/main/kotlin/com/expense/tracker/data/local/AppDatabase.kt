@@ -29,7 +29,7 @@ import com.expense.tracker.data.local.entity.StockEntryEntity
         StockEntryEntity::class,
         CreditPaymentEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -88,6 +88,17 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Sales: add payment type (CASH/CREDIT) and customer name for credit sales
+                db.execSQL("ALTER TABLE sales ADD COLUMN paymentType TEXT NOT NULL DEFAULT 'CASH'")
+                db.execSQL("ALTER TABLE sales ADD COLUMN customerName TEXT NOT NULL DEFAULT ''")
+
+                // Credits: add linked sale ID for auto-created credits
+                db.execSQL("ALTER TABLE credits ADD COLUMN linkedSaleId INTEGER DEFAULT NULL")
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -95,7 +106,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "penny_trail.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build().also { INSTANCE = it }
             }
         }

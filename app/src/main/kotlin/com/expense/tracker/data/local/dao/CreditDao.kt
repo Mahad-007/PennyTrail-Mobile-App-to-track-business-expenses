@@ -35,6 +35,12 @@ interface CreditDao {
     @Query("UPDATE credits SET isPaid = 1, paidDate = :paidDate WHERE id = :id")
     suspend fun markAsPaid(id: Long, paidDate: Long)
 
+    @Query("SELECT * FROM credits WHERE linkedSaleId = :saleId LIMIT 1")
+    suspend fun getCreditByLinkedSaleId(saleId: Long): CreditEntity?
+
+    @Query("DELETE FROM credits WHERE linkedSaleId = :saleId")
+    suspend fun deleteCreditByLinkedSaleId(saleId: Long)
+
     @Delete
     suspend fun delete(credit: CreditEntity)
 }

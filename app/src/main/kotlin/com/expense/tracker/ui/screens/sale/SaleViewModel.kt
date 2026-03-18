@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.expense.tracker.data.local.entity.DailySalesSummary
+import com.expense.tracker.data.local.entity.PaymentType
 import com.expense.tracker.data.local.entity.ProductEntity
 import com.expense.tracker.data.local.entity.SaleEntity
 import com.expense.tracker.data.local.entity.SalesByProduct
@@ -27,6 +28,9 @@ data class SaleFormState(
     val productName: String = "",
     val quantity: String = "1",
     val unitPrice: String = "",
+    val paymentType: PaymentType = PaymentType.CASH,
+    val customerName: String = "",
+    val originalPaymentType: PaymentType = PaymentType.CASH,
     val isEditing: Boolean = false
 ) {
     val totalAmount: Double
@@ -94,11 +98,15 @@ class SaleViewModel(
         if (id == -1L) return
         viewModelScope.launch {
             saleRepository.getSaleById(id)?.let { sale ->
+                val type = try { PaymentType.valueOf(sale.paymentType) } catch (_: Exception) { PaymentType.CASH }
                 _formState.value = SaleFormState(
                     date = sale.date,
                     productName = sale.productName,
                     quantity = sale.quantity.toString(),
                     unitPrice = sale.unitPrice.toString(),
+                    paymentType = type,
+                    customerName = sale.customerName,
+                    originalPaymentType = type,
                     isEditing = true
                 )
             }
@@ -109,6 +117,8 @@ class SaleViewModel(
     fun updateQuantity(qty: String) { _formState.value = _formState.value.copy(quantity = qty) }
     fun updateUnitPrice(price: String) { _formState.value = _formState.value.copy(unitPrice = price) }
     fun updateProductName(name: String) { _formState.value = _formState.value.copy(productName = name) }
+    fun updatePaymentType(type: PaymentType) { _formState.value = _formState.value.copy(paymentType = type) }
+    fun updateCustomerName(name: String) { _formState.value = _formState.value.copy(customerName = name) }
 
     fun selectProduct(product: ProductEntity) {
         _formState.value = _formState.value.copy(
@@ -123,31 +133,25 @@ class SaleViewModel(
         val qty = state.quantity.toIntOrNull() ?: return
         val price = state.unitPrice.toDoubleOrNull() ?: return
         if (state.productName.isBlank()) return
+        if (state.paymentType == PaymentType.CREDIT && state.customerName.isBlank()) return
+
+        val sale = SaleEntity(
+            id = if (state.isEditing && existingId != -1L) existingId else 0,
+            date = state.date,
+            productId = state.selectedProduct?.id,
+            productName = state.productName.trim(),
+            quantity = qty,
+            unitPrice = price,
+            totalAmount = qty * price,
+            paymentType = state.paymentType.name,
+            customerName = if (state.paymentType == PaymentType.CREDIT) state.customerName.trim() else ""
+        )
 
         viewModelScope.launch {
             if (state.isEditing && existingId != -1L) {
-                saleRepository.update(
-                    SaleEntity(
-                        id = existingId,
-                        date = state.date,
-                        productId = state.selectedProduct?.id,
-                        productName = state.productName.trim(),
-                        quantity = qty,
-                        unitPrice = price,
-                        totalAmount = qty * price
-                    )
-                )
+                saleRepository.update(sale, state.originalPaymentType.name)
             } else {
-                saleRepository.insert(
-                    SaleEntity(
-                        date = state.date,
-                        productId = state.selectedProduct?.id,
-                        productName = state.productName.trim(),
-                        quantity = qty,
-                        unitPrice = price,
-                        totalAmount = qty * price
-                    )
-                )
+                saleRepository.insert(sale)
             }
             onComplete()
         }

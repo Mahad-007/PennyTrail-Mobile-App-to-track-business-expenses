@@ -25,5 +25,7 @@ data class SaleEntity(
     val quantity: Int,
     val unitPrice: Double,
     val totalAmount: Double,
+    val paymentType: String = PaymentType.CASH.name,
+    val customerName: String = "",
     val createdAt: Long = System.currentTimeMillis()
 )

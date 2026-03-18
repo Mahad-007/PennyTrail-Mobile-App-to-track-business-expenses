@@ -188,11 +188,23 @@ fun AddEditCreditScreen(creditId: Long, navController: NavController) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            CurrencyTextField(
-                label = "Amount",
-                value = formState.amount,
-                onValueChange = { viewModel.updateAmount(it) }
-            )
+            if (formState.linkedSaleId != null) {
+                OutlinedTextField(
+                    value = "Rs. ${formState.amount}",
+                    onValueChange = {},
+                    label = { Text("Amount") },
+                    enabled = false,
+                    supportingText = { Text("Amount linked to sale. Edit the sale to change.") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                CurrencyTextField(
+                    label = "Amount",
+                    value = formState.amount,
+                    onValueChange = { viewModel.updateAmount(it) }
+                )
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 

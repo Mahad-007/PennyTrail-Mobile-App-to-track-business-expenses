@@ -1,6 +1,9 @@
 package com.expense.tracker.ui.screens.sale
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +18,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.expense.tracker.PennyTrailApp
+import com.expense.tracker.data.local.entity.PaymentType
 import com.expense.tracker.ui.components.ConfirmDeleteDialog
 import com.expense.tracker.ui.components.CurrencyTextField
 import com.expense.tracker.ui.components.DatePickerField
@@ -173,13 +178,44 @@ fun AddEditSaleScreen(saleId: Long, navController: NavController) {
                 color = MaterialTheme.colorScheme.primary
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = formState.paymentType == PaymentType.CASH,
+                    onClick = { viewModel.updatePaymentType(PaymentType.CASH) },
+                    label = { Text("Cash") }
+                )
+                FilterChip(
+                    selected = formState.paymentType == PaymentType.CREDIT,
+                    onClick = { viewModel.updatePaymentType(PaymentType.CREDIT) },
+                    label = { Text("Credit (Udhar)") }
+                )
+            }
+
+            AnimatedVisibility(visible = formState.paymentType == PaymentType.CREDIT) {
+                Column {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = formState.customerName,
+                        onValueChange = { viewModel.updateCustomerName(it) },
+                        label = { Text("Customer Name") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = { viewModel.saveSale(saleId) { navController.popBackStack() } },
                 enabled = formState.productName.isNotBlank()
                         && formState.quantity.toIntOrNull() != null
-                        && formState.unitPrice.toDoubleOrNull() != null,
+                        && formState.unitPrice.toDoubleOrNull() != null
+                        && (formState.paymentType == PaymentType.CASH || formState.customerName.isNotBlank()),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save Sale")

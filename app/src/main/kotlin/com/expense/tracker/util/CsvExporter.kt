@@ -37,9 +37,9 @@ object CsvExporter {
         if (sales.isNotEmpty()) {
             val file = File(exportDir, "sales.csv")
             FileWriter(file).use { writer ->
-                writer.appendLine("ID,Date,Product Name,Quantity,Unit Price,Total Amount")
+                writer.appendLine("ID,Date,Product Name,Quantity,Unit Price,Total Amount,Payment Type,Customer Name")
                 sales.forEach { s ->
-                    writer.appendLine("${s.id},${DateUtils.formatDate(s.date)},${csvEscape(s.productName)},${s.quantity},${s.unitPrice},${s.totalAmount}")
+                    writer.appendLine("${s.id},${DateUtils.formatDate(s.date)},${csvEscape(s.productName)},${s.quantity},${s.unitPrice},${s.totalAmount},${s.paymentType},${csvEscape(s.customerName)}")
                 }
             }
             files.add(file)
@@ -76,10 +76,10 @@ object CsvExporter {
         if (credits.isNotEmpty()) {
             val file = File(exportDir, "credits.csv")
             FileWriter(file).use { writer ->
-                writer.appendLine("ID,Person Name,Total Amount,Amount Paid,Remaining,Is Paid,Date,Description")
+                writer.appendLine("ID,Person Name,Total Amount,Amount Paid,Remaining,Is Paid,Date,Description,Linked Sale ID")
                 credits.forEach { c ->
                     val remaining = c.amount - c.amountPaid
-                    writer.appendLine("${c.id},${csvEscape(c.personName)},${c.amount},${c.amountPaid},${remaining},${c.isPaid},${DateUtils.formatDate(c.date)},${csvEscape(c.description)}")
+                    writer.appendLine("${c.id},${csvEscape(c.personName)},${c.amount},${c.amountPaid},${remaining},${c.isPaid},${DateUtils.formatDate(c.date)},${csvEscape(c.description)},${c.linkedSaleId ?: ""}")
                 }
             }
             files.add(file)

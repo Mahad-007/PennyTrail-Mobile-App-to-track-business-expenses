@@ -167,6 +167,14 @@ fun CreditListScreen(navController: NavController) {
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
+                                    if (credit.linkedSaleId != null) {
+                                        Text(
+                                            text = "From Sale",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.pennyTrailColors.creditAmber
+                                        )
+                                    }
                                 }
                                 Column(horizontalAlignment = Alignment.End) {
                                     Text(
